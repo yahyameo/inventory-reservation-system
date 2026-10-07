@@ -3,8 +3,16 @@
  * They are expected outcomes (not bugs) and the HTTP layer maps each `code`
  * to a status code. Anything that is not a DomainError is treated as a 500.
  */
+export type DomainErrorCode =
+  | 'INVALID_QUANTITY'
+  | 'INSUFFICIENT_STOCK'
+  | 'PRODUCT_NOT_FOUND'
+  | 'RESERVATION_NOT_FOUND'
+  | 'INVALID_RESERVATION_STATE'
+  | 'RESERVATION_EXPIRED';
+
 export abstract class DomainError extends Error {
-  abstract readonly code: string;
+  abstract readonly code: DomainErrorCode;
 
   protected constructor(message: string) {
     super(message);
