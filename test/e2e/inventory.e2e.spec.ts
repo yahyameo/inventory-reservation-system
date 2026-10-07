@@ -4,6 +4,7 @@ import request from 'supertest';
 import { AppModule, configureApp } from '../../src/app.module';
 import { loadAppConfig } from '../../src/config/app-config';
 import { CLOCK } from '../../src/inventory/application/ports/clock';
+import { setupSwagger } from '../../src/swagger';
 import { FakeClock } from '../support/fake-clock';
 import { TWO_MINUTES_MS } from '../support/inventory-fixture';
 
@@ -20,6 +21,7 @@ describe('Inventory reservation API (e2e)', () => {
       .useValue(clock)
       .compile();
     app = configureApp(moduleRef.createNestApplication({ logger: false }));
+    setupSwagger(app);
     await app.listen(0);
     baseUrl = await app.getUrl();
   });
@@ -37,6 +39,24 @@ describe('Inventory reservation API (e2e)', () => {
 
   const reserve = (productId: string, userId = 'user-a', quantity?: number) =>
     api().post(`/products/${productId}/reservations`).send({ userId, quantity });
+
+  it('serves the OpenAPI document and Swagger UI', async () => {
+    const spec = await api().get('/docs-json');
+    const ui = await api().get('/docs');
+
+    expect(spec.status).toBe(200);
+    expect(Object.keys(spec.body.paths)).toEqual(
+      expect.arrayContaining([
+        '/products',
+        '/products/{productId}',
+        '/products/{productId}/reservations',
+        '/reservations/{reservationId}',
+        '/reservations/{reservationId}/confirm',
+        '/reservations/{reservationId}/cancel',
+      ]),
+    );
+    expect(ui.status).toBe(200);
+  });
 
   describe('products', () => {
     it('creates a product with all stock available', async () => {

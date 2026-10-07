@@ -17,6 +17,7 @@ Requires Node.js 20 or later.
 ```bash
 npm install
 npm run start:dev          # http://localhost:3000, in-memory storage
+                           # Swagger UI: http://localhost:3000/docs (OpenAPI JSON: /docs-json)
 npm test                   # unit + MongoDB integration + e2e (116 tests)
 npm run check              # lint + typecheck + all tests
 ```
@@ -47,6 +48,8 @@ Invalid configuration fails at startup with a clear message.
 ---
 
 ## API
+
+Interactive documentation is served at **`/docs`** (Swagger UI), with the raw OpenAPI document at **`/docs-json`**.
 
 | Method | Path | Body | Success | Errors |
 | --- | --- | --- | --- | --- |
@@ -234,7 +237,6 @@ Time is controlled by an injected `FakeClock`, so expiry tests never sleep. Cove
 - **Observability:** metrics for lock wait time, transaction retries, and reservations per status.
 - **An outbox for domain events** such as `ReservationConfirmed`, for downstream order and payment services.
 - **Rate limiting and a queue in front of hot products** to absorb bursts above capacity.
-- **OpenAPI documentation** generated from the DTOs.
 
 ---
 
