@@ -12,7 +12,8 @@ const base = {
 
 /** @type {import('jest').Config} */
 module.exports = {
-  collectCoverageFrom: ['src/**/*.ts', '!src/main.ts', '!src/**/*.module.ts'],
+  collectCoverageFrom: ['src/**/*.ts', '!src/**/*.spec.ts', '!src/main.ts', '!src/**/*.module.ts'],
+  coverageThreshold: { global: { statements: 95, branches: 85, functions: 95, lines: 95 } },
   coverageDirectory: 'coverage',
   projects: [
     { ...base, displayName: 'unit', testMatch: ['<rootDir>/src/**/*.spec.ts'] },

@@ -19,7 +19,9 @@
     "test:unit": "jest --selectProjects unit",
     "test:mongo": "jest --selectProjects mongo",
     "test:e2e": "jest --selectProjects e2e",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "mongo:dev": "node scripts/start-dev-mongo.js",
+    "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
     "@nestjs/common": "^11.2.7",
