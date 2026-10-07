@@ -12,14 +12,15 @@ export enum ReservationStatus {
  *     │ ────cancel───▶ CANCELLED   (stock released)
  *     └─────expire───▶ EXPIRED     (stock released)
  */
-export const ALLOWED_TRANSITIONS: Readonly<Record<ReservationStatus, readonly ReservationStatus[]>> =
-  {
-    [ReservationStatus.Active]: [
-      ReservationStatus.Confirmed,
-      ReservationStatus.Cancelled,
-      ReservationStatus.Expired,
-    ],
-    [ReservationStatus.Confirmed]: [],
-    [ReservationStatus.Cancelled]: [],
-    [ReservationStatus.Expired]: [],
-  };
+export const ALLOWED_TRANSITIONS: Readonly<
+  Record<ReservationStatus, readonly ReservationStatus[]>
+> = {
+  [ReservationStatus.Active]: [
+    ReservationStatus.Confirmed,
+    ReservationStatus.Cancelled,
+    ReservationStatus.Expired,
+  ],
+  [ReservationStatus.Confirmed]: [],
+  [ReservationStatus.Cancelled]: [],
+  [ReservationStatus.Expired]: [],
+};

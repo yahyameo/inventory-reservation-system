@@ -121,15 +121,24 @@ describe('Reservation', () => {
     });
   });
 
-  it.each([
-    ['confirm', (r: Reservation) => r.confirm(at(HOLD_MS + 1))],
-    ['cancel', (r: Reservation) => r.cancel(at(HOLD_MS + 1))],
-    ['expire', (r: Reservation) => r.expire(at(HOLD_MS + 1))],
-  ])('treats EXPIRED as terminal (%s is rejected)', (_action, act) => {
-    const reservation = newReservation();
-    reservation.expire(at(HOLD_MS));
+  describe('once EXPIRED (terminal)', () => {
+    const expired = () => {
+      const reservation = newReservation();
+      reservation.expire(at(HOLD_MS));
+      return reservation;
+    };
 
-    expect(() => act(reservation)).toThrow(InvalidReservationStateError);
+    it('confirm reports the reservation as expired', () => {
+      expect(() => expired().confirm(at(HOLD_MS + 1))).toThrow(ReservationExpiredError);
+    });
+
+    it('cancel reports the reservation as expired', () => {
+      expect(() => expired().cancel(at(HOLD_MS + 1))).toThrow(ReservationExpiredError);
+    });
+
+    it('cannot be expired again', () => {
+      expect(() => expired().expire(at(HOLD_MS + 1))).toThrow(InvalidReservationStateError);
+    });
   });
 
   it('round-trips through a snapshot', () => {

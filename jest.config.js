@@ -20,7 +20,6 @@ module.exports = {
       ...base,
       displayName: 'mongo',
       testMatch: ['<rootDir>/test/mongo/**/*.spec.ts'],
-      testTimeout: 120_000,
     },
     { ...base, displayName: 'e2e', testMatch: ['<rootDir>/test/e2e/**/*.spec.ts'] },
   ],

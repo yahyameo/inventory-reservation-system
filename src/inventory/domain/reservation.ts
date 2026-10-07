@@ -90,14 +90,14 @@ export class Reservation {
   }
 
   confirm(now: Date): void {
-    this.assertCanTransition(ReservationStatus.Confirmed, 'confirm');
     this.assertHoldNotLapsed(now);
+    this.assertCanTransition(ReservationStatus.Confirmed, 'confirm');
     this.transitionTo(ReservationStatus.Confirmed, now);
   }
 
   cancel(now: Date): void {
-    this.assertCanTransition(ReservationStatus.Cancelled, 'cancel');
     this.assertHoldNotLapsed(now);
+    this.assertCanTransition(ReservationStatus.Cancelled, 'cancel');
     this.transitionTo(ReservationStatus.Cancelled, now);
   }
 
@@ -124,8 +124,12 @@ export class Reservation {
     };
   }
 
+  /**
+   * Whether the expiry was already recorded (EXPIRED) or is only due (ACTIVE
+   * past expiresAt), the caller gets the same answer: the hold is gone.
+   */
   private assertHoldNotLapsed(now: Date): void {
-    if (this.isDueForExpiry(now)) {
+    if (this.currentStatus === ReservationStatus.Expired || this.isDueForExpiry(now)) {
       throw new ReservationExpiredError(this.id);
     }
   }
