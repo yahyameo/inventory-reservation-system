@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { createInventory, TWO_MINUTES_MS } from '../../../test/support/inventory-fixture';
 import {
   InsufficientStockError,
@@ -7,6 +8,7 @@ import {
   ReservationExpiredError,
   ReservationNotFoundError,
 } from '../domain/errors';
+import { Reservation } from '../domain/reservation';
 import { ReservationStatus } from '../domain/reservation-status';
 
 describe('ReservationService', () => {
@@ -14,6 +16,10 @@ describe('ReservationService', () => {
 
   beforeEach(() => {
     inventory = createInventory();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   const createProduct = async (totalStock: number) =>
@@ -262,6 +268,31 @@ describe('ReservationService', () => {
         const snapshotB = await inventory.unitOfWork.read((r) => r.products.findById(productB));
         expect(snapshotA?.availableStock).toBe(2);
         expect(snapshotB?.availableStock).toBe(1);
+      });
+
+      it('the sweeper skips a product that fails and still releases the others', async () => {
+        jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+        const healthy = await createProduct(1);
+        await inventory.reservations.reserve({ productId: healthy, userId: 'u1', quantity: 1 });
+        // Corrupt data: a held reservation the product's ledger knows nothing about.
+        const corrupt = await createProduct(1);
+        const orphan = Reservation.create({
+          id: 'orphan',
+          productId: corrupt,
+          userId: 'u2',
+          quantity: 1,
+          now: inventory.clock.now(),
+          holdDurationMs: TWO_MINUTES_MS,
+        });
+        await inventory.unitOfWork.runExclusive(corrupt, (r) => r.reservations.save(orphan));
+        inventory.clock.advanceBy(TWO_MINUTES_MS);
+
+        const released = await inventory.expiry.releaseAllExpired();
+
+        expect(released).toBe(1);
+        expect(Logger.prototype.error).toHaveBeenCalledTimes(1);
+        const product = await inventory.unitOfWork.read((r) => r.products.findById(healthy));
+        expect(product?.availableStock).toBe(1);
       });
 
       it('the sweeper leaves active, confirmed and cancelled reservations alone', async () => {
