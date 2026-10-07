@@ -221,9 +221,7 @@ describe('ReservationService', () => {
         });
 
         expect(second.status).toBe(ReservationStatus.Active);
-        expect((await inventory.reservations.get(first.id)).status).toBe(
-          ReservationStatus.Expired,
-        );
+        expect((await inventory.reservations.get(first.id)).status).toBe(ReservationStatus.Expired);
       });
 
       it('keeps holding stock until the exact expiry instant', async () => {

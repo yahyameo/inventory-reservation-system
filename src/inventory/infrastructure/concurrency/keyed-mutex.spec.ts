@@ -55,9 +55,9 @@ describe('KeyedMutex', () => {
     const mutex = new KeyedMutex();
 
     await expect(mutex.runExclusive('k', () => Promise.resolve(42))).resolves.toBe(42);
-    await expect(
-      mutex.runExclusive('k', () => Promise.reject(new Error('boom'))),
-    ).rejects.toThrow('boom');
+    await expect(mutex.runExclusive('k', () => Promise.reject(new Error('boom')))).rejects.toThrow(
+      'boom',
+    );
   });
 
   it('releases the lock when a task fails, so later tasks still run', async () => {

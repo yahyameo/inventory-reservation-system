@@ -1,7 +1,4 @@
-import {
-  ProductRepository,
-  ReservationRepository,
-} from '../../application/ports/repositories';
+import { ProductRepository, ReservationRepository } from '../../application/ports/repositories';
 import { Product, ProductSnapshot } from '../../domain/product';
 import { Reservation, ReservationSnapshot } from '../../domain/reservation';
 import { StagedTable } from './staged-table';

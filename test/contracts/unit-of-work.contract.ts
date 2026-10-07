@@ -6,7 +6,10 @@ import { Reservation } from '../../src/inventory/domain/reservation';
  * Behaviour every UnitOfWork adapter must provide. It runs against the
  * in-memory adapter (unit project) and the MongoDB adapter (mongo project).
  */
-export function unitOfWorkContract(name: string, createUnitOfWork: () => Promise<UnitOfWork>): void {
+export function unitOfWorkContract(
+  name: string,
+  createUnitOfWork: () => Promise<UnitOfWork>,
+): void {
   describe(`${name} (UnitOfWork contract)`, () => {
     let uow: UnitOfWork;
     let productSeq = 0;
@@ -117,7 +120,9 @@ export function unitOfWorkContract(name: string, createUnitOfWork: () => Promise
       });
 
       const later = new Date(now.getTime() + 5_000);
-      const found = await uow.read((repos) => repos.reservations.findDueForExpiry(productId, later));
+      const found = await uow.read((repos) =>
+        repos.reservations.findDueForExpiry(productId, later),
+      );
       const productIds = await uow.read((repos) =>
         repos.reservations.findProductIdsWithDueReservations(later),
       );
