@@ -1,3 +1,5 @@
+import { ProductLock } from './product-lock';
+
 /**
  * An async mutex per key (here: per product id).
  *
@@ -25,7 +27,7 @@
  * Scope: this serialises work inside ONE process. Multi-instance deployments
  * need a shared mechanism as well (see MongoUnitOfWork, which adds DB transactions).
  */
-export class KeyedMutex {
+export class KeyedMutex implements ProductLock {
   /** Per key: a promise that settles when the most recently queued task finishes. */
   private readonly tails = new Map<string, Promise<void>>();
 
